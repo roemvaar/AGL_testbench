@@ -38,16 +38,21 @@ int main(int argc, char *argv[])
 		return 1;
 	}
 
-	n_bytes = read(s, &frame, sizeof(struct can_frame));
+	while(1) {
+		n_bytes = read(s, &frame, sizeof(struct can_frame));
 
-	if (n_bytes < 0) {
-		perror("Read");
-		return 1;
+		if (n_bytes < 0) {
+			perror("Read");
+			return 1;
+		}
+
+		printf("0x%03X [%d] ", frame.can_id, frame.can_dlc);
+		printf("\r\n");
+
+		if(frame.can_id == 0x555) {
+			printf("FOUND IT!\n");
+		}
 	}
-
-	printf("0x%03X [%d] ", frame.can_id, frame.can_dlc);
-
-	printf("\r\n");
 
 	if (close(s) < 0) {
 		perror("Close");
