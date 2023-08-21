@@ -49,7 +49,207 @@ int main(int argc, char *argv[])
         canid_t can_id = frame.can_id;
 
 		switch(can_id) {
-			case 0x451:
+			case 0x101:
+				printf("Known Command 1\n");
+				printf("0x%03X [%d] ", frame.can_id, frame.can_dlc);
+				printf("\r\n");
+				break;
+			case 0x102:
+				printf("Known Command 2\n");
+				printf("0x%03X [%d] ", frame.can_id, frame.can_dlc);
+				printf("\r\n");
+				break;
+			case 0x103:
+				printf("Known Command 3\n");
+				printf("0x%03X [%d] ", frame.can_id, frame.can_dlc);
+				printf("\r\n");
+				break;
+			case 0x104:
+				printf("Known Command 4\n");
+				printf("0x%03X [%d] ", frame.can_id, frame.can_dlc);
+				printf("\r\n");
+				break;
+			case 0x106:
+				printf("Known Command 5\n");
+				printf("0x%03X [%d] ", frame.can_id, frame.can_dlc);
+				printf("\r\n");
+				break;
+			case 0x107:
+				printf("Known Command 6\n");
+				printf("0x%03X [%d] ", frame.can_id, frame.can_dlc);
+				printf("\r\n");
+				break;
+			case 0x108:
+				printf("Known Command 7\n");
+				printf("0x%03X [%d] ", frame.can_id, frame.can_dlc);
+				printf("\r\n");
+				break;
+			case 0x109:
+				printf("Known Command 8\n");
+				printf("0x%03X [%d] ", frame.can_id, frame.can_dlc);
+				printf("\r\n");
+				break;
+			case 0x113:
+				printf("Known Command 9\n");
+				printf("0x%03X [%d] ", frame.can_id, frame.can_dlc);
+				printf("\r\n");
+				break;
+			case 0x114:
+				printf("Known Command 10\n");
+				printf("0x%03X [%d] ", frame.can_id, frame.can_dlc);
+				printf("\r\n");
+				break;
+			case 0x125:
+				printf("Known Command 11\n");
+				printf("0x%03X [%d] ", frame.can_id, frame.can_dlc);
+				printf("\r\n");
+				break;
+			case 0x157:
+				printf("Known Command 12\n");
+				printf("0x%03X [%d] ", frame.can_id, frame.can_dlc);
+				printf("\r\n");
+				break;
+			case 0x159:
+				printf("Known Command 13\n");
+				printf("0x%03X [%d] ", frame.can_id, frame.can_dlc);
+				printf("\r\n");
+				break;
+			case 0x167:
+				printf("Known Command 14\n");
+				printf("0x%03X [%d] ", frame.can_id, frame.can_dlc);
+				printf("\r\n");
+				break;
+			case 0x172:
+				printf("Known Command 15\n");
+				printf("0x%03X [%d] ", frame.can_id, frame.can_dlc);
+				printf("\r\n");
+				break;
+			case 0x182:
+				printf("Known Command 16\n");
+				printf("0x%03X [%d] ", frame.can_id, frame.can_dlc);
+				printf("\r\n");
+				break;
+			case 0x183:
+				printf("Known Command 17\n");
+				printf("0x%03X [%d] ", frame.can_id, frame.can_dlc);
+				printf("\r\n");
+				break;
+			case 0x184:
+				printf("Known Command 18\n");
+				printf("0x%03X [%d] ", frame.can_id, frame.can_dlc);
+				printf("\r\n");
+				break;
+			case 0x185:
+				printf("Known Command 19\n");
+				printf("0x%03X [%d] ", frame.can_id, frame.can_dlc);
+				printf("\r\n");
+				break;
+			case 0x187:
+				printf("Known Command 20\n");
+				printf("0x%03X [%d] ", frame.can_id, frame.can_dlc);
+				printf("\r\n");
+				break;
+			case 0x189:
+				printf("Known Command 21\n");
+				printf("0x%03X [%d] ", frame.can_id, frame.can_dlc);
+				printf("\r\n");
+				break;
+			case 0x192:
+				printf("Known Command 22\n");
+				printf("0x%03X [%d] ", frame.can_id, frame.can_dlc);
+				printf("\r\n");
+				break;
+			case 0x195:
+				printf("Known Command 23\n");
+				printf("0x%03X [%d] ", frame.can_id, frame.can_dlc);
+				printf("\r\n");
+				break;
+			case 0x198:
+				printf("Known Command 24\n");
+				printf("0x%03X [%d] ", frame.can_id, frame.can_dlc);
+				printf("\r\n");
+				break;
+			case 0x200:
+				printf("Known Command 25\n");
+				printf("0x%03X [%d] ", frame.can_id, frame.can_dlc);
+				printf("\r\n");
+				break;
+			case 0x201:
+				printf("Known Command 26\n");
+				printf("0x%03X [%d] ", frame.can_id, frame.can_dlc);
+				printf("\r\n");
+				break;
+			case 0x203:
+				printf("Known Command 27\n");
+				printf("0x%03X [%d] ", frame.can_id, frame.can_dlc);
+				printf("\r\n");
+				break;
+			case 0x204:
+				printf("Known Command 28\n");
+				printf("0x%03X [%d] ", frame.can_id, frame.can_dlc);
+				printf("\r\n");
+				break;
+			case 0x209:
+				printf("Known Command 29\n");
+				printf("0x%03X [%d] ", frame.can_id, frame.can_dlc);
+				printf("\r\n");
+				break;
+			case 0x212:
+				printf("Known Command 30\n");
+				printf("0x%03X [%d] ", frame.can_id, frame.can_dlc);
+				printf("\r\n");
+				break;
+			case 0x234:
+				printf("Known Command 31\n");
+				printf("0x%03X [%d] ", frame.can_id, frame.can_dlc);
+				printf("\r\n");
+				break;
+			case 0x237:
+				printf("Known Command 32\n");
+				printf("0x%03X [%d] ", frame.can_id, frame.can_dlc);
+				printf("\r\n");
+				break;
+			case 0x239:
+				printf("Known Command 33\n");
+				printf("0x%03X [%d] ", frame.can_id, frame.can_dlc);
+				printf("\r\n");
+				break;
+			case 0x248:
+				printf("Known Command 34\n");
+				printf("0x%03X [%d] ", frame.can_id, frame.can_dlc);
+				printf("\r\n");
+				break;
+			case 0x249:
+				printf("Known Command 35\n");
+				printf("0x%03X [%d] ", frame.can_id, frame.can_dlc);
+				printf("\r\n");
+				break;
+			case 0x253:
+				printf("Known Command 36\n");
+				printf("0x%03X [%d] ", frame.can_id, frame.can_dlc);
+				printf("\r\n");
+				break;
+			case 0x254:
+				printf("Known Command 37\n");
+				printf("0x%03X [%d] ", frame.can_id, frame.can_dlc);
+				printf("\r\n");
+				break;
+			case 0x255:
+				printf("Known Command 38\n");
+				printf("0x%03X [%d] ", frame.can_id, frame.can_dlc);
+				printf("\r\n");
+				break;
+			case 0x256:
+				printf("Known Command 39\n");
+				printf("0x%03X [%d] ", frame.can_id, frame.can_dlc);
+				printf("\r\n");
+				break;
+			case 0x257:
+				printf("Known Command 40\n");
+				printf("0x%03X [%d] ", frame.can_id, frame.can_dlc);
+				printf("\r\n");
+				break;
+			case 0x258:
 				printf("Proxy: 1\n");
 				printf("0x%03X [%d] ", frame.can_id, frame.can_dlc);
 				printf("\r\n");
