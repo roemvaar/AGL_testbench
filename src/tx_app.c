@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
 		return 1;
 	}
 
-	strcpy(ifr.ifr_name, "vcan0");
+	strcpy(ifr.ifr_name, "can1");
 	ioctl(s, SIOCGIFINDEX, &ifr);
 
 	memset(&address, 0, sizeof(address));
@@ -41,6 +41,8 @@ int main(int argc, char *argv[])
 	// frame.can_id = 0x553;
 	frame.can_dlc = 5;
 	sprintf(frame.data, "Hello");
+
+	// canid_t known_commands[] = {}
 
 	canid_t unknown_commands[] = {0x451, 0x452, 0x453, 0x554, 0x555, 0x556, 0x557, 0x558,
 									0x654, 0x655, 0x656, 0x657, 0x658,

@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
 		return 1;
 	}
 
-	strcpy(ifr.ifr_name, "vcan0");
+	strcpy(ifr.ifr_name, "can0");
 	ioctl(s, SIOCGIFINDEX, &ifr);
 
 	memset(&address, 0, sizeof(address));
@@ -315,27 +315,27 @@ int main(int argc, char *argv[])
 				printf("\r\n");
 				break;
 			case 0x754:
-				printf("Flash operation: 1\n");
+				printf("I/O operation: 1\n");
 				printf("0x%03X [%d] ", frame.can_id, frame.can_dlc);
 				printf("\r\n");
 				break;
 			case 0x755:
-				printf("Flash operation: 5\n");
+				printf("I/O operation: 5\n");
 				printf("0x%03X [%d] ", frame.can_id, frame.can_dlc);
 				printf("\r\n");
 				break;
 			case 0x756:
-				printf("Flash operation: 10\n");
+				printf("I/O operation: 10\n");
 				printf("0x%03X [%d] ", frame.can_id, frame.can_dlc);
 				printf("\r\n");
 				break;
 			case 0x757:
-				printf("Flash operation: 100\n");
+				printf("I/O operation: 100\n");
 				printf("0x%03X [%d] ", frame.can_id, frame.can_dlc);
 				printf("\r\n");
 				break;
 			case 0x758:
-				printf("Flash operation: 1000\n");
+				printf("I/O operation: 1000\n");
 				printf("0x%03X [%d] ", frame.can_id, frame.can_dlc);
 				printf("\r\n");
 				break;

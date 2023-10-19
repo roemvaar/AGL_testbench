@@ -1,4 +1,5 @@
 # CAN-examples
+
 CAN Examples repository
 
 ## vcan
@@ -10,6 +11,10 @@ $ sudo modprobe vcan
 $ sudo ip link add dev vcan0 type vcan
 $ sudo ip link set up vcan0
 ```
+
+<!-- TODO: Add instructions to ssh to RPi4 -->
+<!-- TODO: Add instructions to Kuksa client through bash -->
+
 
 ## Build
 
@@ -30,4 +35,10 @@ Terminal 2:
 
 ```
 $ ./can_tx
+```
+
+## CAN Dump
+
+```
+$ candump vcan0
 ```
