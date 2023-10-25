@@ -46,8 +46,14 @@ int main(int argc, char *argv[])
 									0x654, 0x655, 0x656, 0x657, 0x658,
 									0x754, 0x755, 0x756, 0x757, 0x758};
 
+	uint32_t vehicle_values[] = {154,39,102,188,73,12,196,85,32,120,5,179,64,18,143,91,26,67,199,7};
+
 	for (int i = 0; i < 18; i++) {
 		frame.can_id = unknown_commands[i];
+		frame.data[0] = vehicle_values[i] & 0xff;
+		frame.data[1] = (vehicle_values[i] >> 8) & 0xff;
+		frame.data[2] = (vehicle_values[i] >> 16) & 0xff;
+		frame.data[3] = (vehicle_values[i] >> 24) & 0xff; 
 
 		if (write(s, &frame, sizeof(struct can_frame)) != sizeof(struct can_frame)) {
 			perror("Write");

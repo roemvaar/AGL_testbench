@@ -10,8 +10,9 @@ import can
 
 def process_can_message(msg):
     if msg.arbitration_id == 0x453:
-        vehicle_speed = int.from_bytes(msg.data, byteorder='big') # TODO: check byteorder, check the arbitration_id, these are arbitrary
-        print(f"Vehicle speed is {vehicle_speed} km/h")
+        # vehicle_speed = int.from_bytes(msg.data, byteorder='big') # TODO: check byteorder, check the arbitration_id, these are arbitrary
+        # print(f"Vehicle speed is {vehicle_speed} km/h")
+        print("")
     elif msg.arbitration_id == 0x102:
         # Handle other CAN IDs and data decoding here
         pass
@@ -20,7 +21,8 @@ def process_can_message(msg):
 
 def main():
     s = socket.socket(socket.AF_CAN, socket.SOCK_RAW, socket.CAN_RAW)
-    
+    dbc = can.Database('CSS-Electronics-SAE-J1939-2020-03_v1.1.dbc')
+
     try:
         s.bind(('vcan0',))
     except OSError as e:
@@ -31,7 +33,7 @@ def main():
     
     while True:
         try:
-            frame = s.recv(16)  # Assuming the maximum CAN frame size is 16 bytes sizeof(struct can_frame) = 16
+            frame = s.recv()  
         except OSError as e:
             print(f"Read error: {e}")
             return 1
@@ -51,7 +53,34 @@ def main():
         
         # Call the message processing function
         process_can_message(msg)
+
+        print(f"Arbitration ID recieved is: {msg.arbitration_id}")
+
+        if(msg.arbitration_id) in dbc:
+            message_definition = dbc[msg.arbitration_id]
+            
+            # Check if it's a J1939 message
+            if message_definition.protocol == 'J1939':
+                source_address = msg.data[0]
+                
+                # Check if it's a Vehicle Speed message (you need to adapt the PGN and signal name)
+                if message_definition.pgn == 2566842622 and "NavigationBasedVehicleSpeed" in message_definition.signals:
+                    vehicle_speed_signal = message_definition.signals["NavigationBasedVehicleSpeed"]
+                    vehicle_speed = vehicle_speed_signal.decode(msg.data)
+                    print(f"Received Vehicle Speed from ECU {source_address}: {vehicle_speed} km/h")
+                    print("Path 1 completed, got vehicle info by searching dbc and decoding")
+
+
+        if(msg.arbitration_id == 2566842622):
+            print("received 2566842622 in path 2")
+            if("NavigationBasedVehicleSpeed" in dbc[msg.arbitration_id].signals):
+                print("found signal name in path 2")
+                vehicle_speed_signal = dbc[msg.arbitration_id].signals["NavigationBasedVehicleSpeed"]
+                v_speed = vehicle_speed_signal.decode(msg.data)
+                print(f"Vehicle Speed: {v_speed} km/h")
         
+        # vehicle_speed = int.from_bytes(msg.data, byteorder='big') # TODO: check byteorder, check the arbitration_id, these are arbitrary
+        # print(f"Vehicle speed is {vehicle_speed} km/h")
 
 
         data_bytes = array.array('B', data)
@@ -62,7 +91,7 @@ def main():
 
         value_to_send = { #TODO: fill these in with the received can msg, test first does this even send to the server? 
             "path": "Vehicle.Speed",  # Path to the value
-            "value": 54.0,            # The actual value you want to send
+            "value": float(vehicle_speed),            # The actual value you want to send
             "timestamp": "2023-06-13T09:17:09.103507+00:00"  # Timestamp (optional)
         }
 
