@@ -12,10 +12,6 @@ $ sudo ip link add dev vcan0 type vcan
 $ sudo ip link set up vcan0
 ```
 
-<!-- TODO: Add instructions to ssh to RPi4 -->
-<!-- TODO: Add instructions to Kuksa client through bash -->
-
-
 ## Build
 
 ```
@@ -42,3 +38,10 @@ $ ./can_tx
 ```
 $ candump vcan0
 ```
+
+## CAN / J1939
+
+* https://www.csselectronics.com/pages/dbc-editor-can-bus-database
+
+* Some scripts need a J1939 dbc on the `j1939` directory.
+This dbc file can't be hosted on GitHub because of licensing.
