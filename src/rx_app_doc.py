@@ -1,13 +1,11 @@
 import can
 import kuksa_viss_client
 
-can_bus = can.interface.Bus("can0", bustype='socketcan')
-
 
 def main():
     config = {}
     kuksa_client = kuksa_viss_client.KuksaClientThread(config)
-    # Pass the license files
+    
 
     # Start the client thread to connect with configuration
     kuksa_client.start()

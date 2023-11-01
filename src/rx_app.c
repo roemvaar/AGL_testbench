@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
 		return 1;
 	}
 
-	strcpy(ifr.ifr_name, "can0");
+	strcpy(ifr.ifr_name, "vcan0");
 	ioctl(s, SIOCGIFINDEX, &ifr);
 
 	memset(&address, 0, sizeof(address));
