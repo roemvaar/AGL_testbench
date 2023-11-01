@@ -2,13 +2,6 @@ cmake_minimum_required(VERSION 3.5)
 project(src)
 set(CMAKE_CXX_STANDARD 17)
 
-# add_executable(${PROJECT_NAME}
-#     can_transmit.c
-#     can_receive.c
-#     can_continuous_tx.c
-#     can_continuous_rx.c
-# )
-
 add_executable(can_transmit
     can_transmit.c
 )

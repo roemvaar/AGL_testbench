@@ -1,45 +1,35 @@
-import array
-import can
-import cantools
-import kuksa_viss_client
 import socket
 import struct
-
-
-def process_can_message(msg):
-    if msg.arbitration_id == 0x453:
-        vehicle_speed = int.from_bytes(msg.data, byteorder='big') # TODO: check byteorder, check the arbitration_id, these are arbitrary
-        print(f"Vehicle speed is {vehicle_speed} km/h")
-        print("")
-    elif msg.arbitration_id == 0x102:
-        # Handle other CAN IDs and data decoding here
-        pass
-    else:
-        print(f"Unknown CAN ID: {msg.arbitration_id}")
+import array
+import kuksa_viss_client
+import can
+import cantools
 
 
 def main():
+    print("CAN Sockets Demo - Receive")
     s = socket.socket(socket.AF_CAN, socket.SOCK_RAW, socket.CAN_RAW)
-    dbc = cantools.database.load_file('CSS-Electronics-SAE-J1939-2020-03_v1.1.dbc')
-    print("no error")
+    client = kuksa_viss_client.KuksaClientThread(config={})
+    client.start()
+    auth = False
+    print("Kuksa Client init... done!")
 
     try:
         s.bind(('vcan0',))
     except OSError as e:
         print(f"Bind error: {e}")
         return 1
-
-    print("CAN Sockets Demo - Receive")
+    print("Connected to vcan0 bus... done!")
 
     while True:
         try:
-            frame = s.recv(16)  
+            frame = s.recv(16)
         except OSError as e:
             print(f"Read error: {e}")
             return 1
 
         can_id, can_dlc, data = struct.unpack("<IB3x8s", frame)
-
+        
         print(f"0x{can_id:03X} [{can_dlc}] ", end="")
 
         # Decode the received frame using python-can
@@ -50,54 +40,8 @@ def main():
             is_extended_id=False  # Assuming standard CAN frames
         )
 
-        # Call the message processing function
-        process_can_message(msg)
-
-        dictionary = dbc.decode_message(msg.arbitration_id, msg.data)
-        for key, value in dictionary.items():
-            print(f"{key}: {value}")
-
-        print(f"Arbitration ID recieved is: {msg.arbitration_id}")
-
-        if(msg.arbitration_id) in dbc:
-            message_definition = dbc[msg.arbitration_id]
-            
-            # Check if it's a J1939 message
-            if message_definition.protocol == 'J1939':
-                source_address = msg.data[0]
-                
-                # Check if it's a Vehicle Speed message (you need to adapt the PGN and signal name)
-                if message_definition.pgn == 2566842622 and "NavigationBasedVehicleSpeed" in message_definition.signals:
-                    vehicle_speed_signal = message_definition.signals["NavigationBasedVehicleSpeed"]
-                    vehicle_speed = vehicle_speed_signal.decode(msg.data)
-                    print(f"Received Vehicle Speed from ECU {source_address}: {vehicle_speed} km/h")
-                    print("Path 1 completed, got vehicle info by searching dbc and decoding")
-
-        if(msg.arbitration_id == 2566842622):
-            print("received 2566842622 in path 2")
-            if("NavigationBasedVehicleSpeed" in dbc[msg.arbitration_id].signals):
-                print("found signal name in path 2")
-                vehicle_speed_signal = dbc[msg.arbitration_id].signals["NavigationBasedVehicleSpeed"]
-                v_speed = vehicle_speed_signal.decode(msg.data)
-                print(f"Vehicle Speed: {v_speed} km/h")
-        
-        # vehicle_speed = int.from_bytes(msg.data, byteorder='big') # TODO: check byteorder, check the arbitration_id, these are arbitrary
-        # print(f"Vehicle speed is {vehicle_speed} km/h")
-
-        data_bytes = array.array('B', data)
-
-        client = kuksa_viss_client.KuksaClientThread(config={})
-        client.start() #does this need args or anything? is the client already started via agl and then im just connecting? TODO: confirm
-        client.authorize("/usr/lib/python3.10/site-packages/kuksa_certificates/jwt/super-admin.json.token")
-
-        value_to_send = { #TODO: fill these in with the received can msg, test first does this even send to the server? 
-            "path": "Vehicle.Speed",  # Path to the value
-            "value": 54.0,            # The actual value you want to send
-            "timestamp": "2023-06-13T09:17:09.103507+00:00"  # Timestamp (optional)
-        }
-
-        # Send the value to the Kuksa server
-        client.setValue("Vehicle.Speed", value_to_send)
+        # Get the initial value from the Kuksa server
+        # print(client.getValue("Vehicle.Speed"))
 
         if can_id == 0x101:
             print("Known Command 1")
@@ -206,15 +150,33 @@ def main():
         elif can_id == 0x658:
             print("Memory operation: 1000")
         elif can_id == 0x754:
-            print("I/O operation: 1")
+            print("Flash operation: 1")
         elif can_id == 0x755:
-            print("I/O operation: 5")
+            print("Flash operation: 5")
         elif can_id == 0x756:
-            print("I/O operation: 10")
+            print("Flash operation: 10")
         elif can_id == 0x757:
-            print("I/O operation: 100")
+            print("Flash operation: 100")
         elif can_id == 0x758:
-            print("I/O operation: 1000")
+            print("Flash operation: 1000")
+        elif can_id == 0x763:
+            print("Update vehicle speed... ", end='')
+
+            if auth:
+                client.setValue("Vehicle.Speed", "36")
+                print("success")
+            else:
+                print("failed. Unauthorized!")
+
+        elif can_id == 0x821:
+            print("Knock 1...")
+        elif can_id == 0x825:
+            print("Knock 2...")
+        elif can_id == 0x833:
+            print("Knock 3... Root (write) permissions granted!")
+            client.authorize("/usr/lib/python3.10/site-packages/kuksa_certificates/jwt/super-admin.json.token")
+            auth = True
+            # print(client.getValue("Vehicle.Speed"))
         else:
             print("Unknown Command")
 

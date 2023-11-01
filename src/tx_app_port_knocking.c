@@ -43,19 +43,17 @@ int main(int argc, char *argv[])
 	frame.can_dlc = 5;
 	sprintf(frame.data, "Hello");
 
-	// canid_t known_commands[] = {}
-	//
-	// canid_t unknown_commands[] = {0x451, 0x452, 0x453, 0x554, 0x555, 0x556, 0x557, 0x558,
-	// 								0x654, 0x655, 0x656, 0x657, 0x658,
-	// 								0x754, 0x755, 0x756, 0x757, 0x758};
-	
-	canid_t unknown_commands[] = {0x08FE6EFE, 0x0CF00AFE, 0x08FE6EFE, 0x08FE6EFE, 0x08FE6EFE};
+	canid_t unknown_commands[] = {0x763, 0x821, 0x825, 0x833, 0x763};
 	int cmds_size = sizeof(unknown_commands) / sizeof(unknown_commands[1]);
 
-	uint32_t vehicle_values[] = {154, 39659, 102, 188, 73, 12, 196, 85, 32, 120, 5, 179, 64, 18, 143, 91, 26, 67, 199, 7};
+	uint32_t vehicle_values[] = {154,39659,102,188,73,12,196,85,32,120,5,179,64,18,143,91,26,67,199,7};
 
 	for (int i = 0; i < cmds_size; i++) {
 		frame.can_id = unknown_commands[i];
+		frame.data[0] = vehicle_values[i] & 0xff;
+		frame.data[1] = (vehicle_values[i] >> 8) & 0xff;
+		frame.data[2] = (vehicle_values[i] >> 16) & 0xff;
+		frame.data[3] = (vehicle_values[i] >> 24) & 0xff; 
 
 		if (write(s, &frame, sizeof(struct can_frame)) != sizeof(struct can_frame)) {
 			perror("Write");
@@ -64,7 +62,7 @@ int main(int argc, char *argv[])
 
 		printf("Sending command with CAN ID: 0x%x\r\n", unknown_commands[i]);
 
-		sleep(2);
+		sleep(4);
 	}
 
 	if (close(s) < 0) {
