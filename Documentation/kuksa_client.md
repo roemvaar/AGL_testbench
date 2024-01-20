@@ -8,4 +8,5 @@ $ printTokenDir
 $ getMetaData Vehicle.Speed
 $ authorize /usr/lib/python3.10/site-packages/kuksa_certificates/jwt/super-admin.json.token
 $ setValue Vehicle.Speed 11
+$ getValue Vehicle.Speed
 ```

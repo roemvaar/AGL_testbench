@@ -4,13 +4,17 @@ CAN Examples repository
 
 ## vcan
 
-[Reference](https://stackoverflow.com/questions/21022749/how-to-create-virtual-can-port-on-linux-c)
+If you get the following error `Bind: no such device`,
+is caused when the CAN device is not setup, in order to solve
+this use the following commands.
 
 ```
 $ sudo modprobe vcan
 $ sudo ip link add dev vcan0 type vcan
 $ sudo ip link set up vcan0
 ```
+
+[Reference](https://stackoverflow.com/questions/21022749/how-to-create-virtual-can-port-on-linux-c)
 
 ## Build
 

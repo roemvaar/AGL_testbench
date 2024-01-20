@@ -2,6 +2,14 @@
 
 ## Replay CAN truck data
 
+Terminal 1:
+
+```
+$ candump can1
+```
+
+Terminal 2:
+
 ```
 $ canplayer -I <candump>.log
 ```
