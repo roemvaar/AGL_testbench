@@ -24,7 +24,7 @@ $ gcc can_receive.c -o can_rx
 Terminal 1:
 
 ```
-$ ./can_tx
+$ ./can_rx
 ```
 
 Terminal 2:
@@ -45,3 +45,10 @@ $ candump vcan0
 
 * Some scripts need a J1939 dbc on the `j1939` directory.
 This dbc file can't be hosted on GitHub because of licensing.
+
+## Copy files to and from target
+
+For development, I usually do an ssh connection using VSCode.
+
+Also, `scp` can be used to copy files from the host to the target
+and vice versa, instructions [here](https://unix.stackexchange.com/questions/188285/how-to-copy-a-file-from-a-remote-server-to-a-local-machine).
