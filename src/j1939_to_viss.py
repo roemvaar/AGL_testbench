@@ -17,7 +17,6 @@ def process_can_message(msg):
 
 
 def alter_message(msg):
-    # msg_pgn = (msg >> 8) & 0x3FFFF #gets 18 bytes
     msg_new = (msg & 0xFFFFFFFFFFFF00) | 0xFE
     msg_new = msg_new & (0x3FFFFFFF)
 
@@ -35,8 +34,6 @@ def main():
     client.authorize("/usr/lib/python3.10/site-packages/kuksa_certificates/jwt/super-admin.json.token")
     print("Kuksa Client init... done!")
     print("Configuration done... ready to handle CAN messages!")
-
-    v_temp = 65.0
 
     try:
         s.bind(('vcan0',))
@@ -72,22 +69,17 @@ def main():
 
         msg_new = alter_message(msg.arbitration_id)
         msg_pgn = (msg.arbitration_id >> 8) & 0x3FFFF #gets 18 bytes
-        # print(hex(msg_pgn))
-
-        # with open('pgn_names.txt') as myfile:
-        #     if str(hex(msg_pgn)) in myfile.read():
-        #         dictionary = dbc.decode_message(msg_new, msg.data)
-        #         for key, value in dictionary.items():
-        #             print(f"{key}: {value}")
-        #     else:
-        #         print("failed")
-        #         return
 
         try:
             if((msg_pgn == 65265) or (msg_pgn == 65248)):
                 dictionary = dbc.decode_message(msg_new, msg.data)
                 for key, value in dictionary.items():
                     print(f"{key}: {value}")
+                    if key == "WheelBasedVehicleSpeed":
+                        wheelBasedVehicleSpeed = value
+                    elif key == "TotalVehicleDistance":
+                        odometerDistance = value
+
                 print("-------------------------------------------------------------------")
 
         except KeyError:
@@ -96,10 +88,10 @@ def main():
 
         # Command handler
         if msg_pgn == 0xFEF1:
-            client.setValue("Vehicle.Speed", str(v_temp))   # TODO: Change v_temp for the correct vehicle speed coming on the SPN
+            client.setValue("Vehicle.Speed", str(wheelBasedVehicleSpeed))   # TODO: Change v_temp for the correct vehicle speed coming on the SPN
             print("Received: Vehicle.Speed")
         elif msg_pgn == 0xFEE0:
-            client.setValue("Vehicle.TravelledDistance", str(v_temp)) # TODO: Change v_temp for the correct vehicle speed coming on the SPN
+            client.setValue("Vehicle.TravelledDistance", str(odometerDistance)) # TODO: Change v_temp for the correct vehicle speed coming on the SPN
             print("Received: Vehicle.TravelledDistance")
         elif msg_pgn == 0xFFFF: # TODO: Update PGN to correct value
             client.setValue("Vehicle.Powertrain.FuelSystem.Level", str(v_temp)) # TODO: Change v_temp for the correct vehicle speed coming on the SPN
@@ -110,11 +102,7 @@ def main():
         elif msg_pgn == 0xFFFD: # TODO: Update PGN to correct value
             client.setValue("Vehicle.Powertrain.CombustionEngine.Speed", str(v_temp)) # TODO: Change v_temp for the correct vehicle speed coming on the SPN
             print("Received: Vehicle.Powertrain.CombustionEngine.Speed")
-        
-        v_temp += 10
-   
-        # print("-------------------------------------------------------------------")
-
+           
     client.stop()
 
 
