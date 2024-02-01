@@ -1,10 +1,8 @@
 import socket
 import struct
-import array
 import kuksa_viss_client
 import can
 import cantools
-import json
 
 
 def process_can_message(msg):
@@ -18,16 +16,25 @@ def process_can_message(msg):
         print(f"Unknown CAN ID")
 
 
+def alter_message(msg):
+    # msg_pgn = (msg >> 8) & 0x3FFFF #gets 18 bytes
+    msg_new = (msg & 0xFFFFFFFFFFFF00) | 0xFE
+    msg_new = msg_new & (0x3FFFFFFF)
+
+    return msg_new
+
+
 def main():
     print("CAN Sockets Demo - Receive")
     s = socket.socket(socket.AF_CAN, socket.SOCK_RAW, socket.CAN_RAW)
-    dbc = cantools.database.load_file('../j1939/CSS-Electronics-SAE-J1939-2020-03_v1.1.dbc')
+    dbc = cantools.database.load_file('CSS-Electronics-SAE-J1939-2020-03_v1.1.dbc')
     print("Load SAE-J1939 DBC file... done!")
 
     client = kuksa_viss_client.KuksaClientThread(config={})
     client.start()
-    client.authorize("/usr/lib/python3.10/site-packages/kuksa_certificates/jwt/super-admin.json.token") #TODO: confirm if this is needed?
+    client.authorize("/usr/lib/python3.10/site-packages/kuksa_certificates/jwt/super-admin.json.token")
     print("Kuksa Client init... done!")
+    print("Configuration done... ready to handle CAN messages!")
 
     v_temp = 65.0
 
@@ -39,41 +46,74 @@ def main():
     
     print("-------------------------------------------------------------------")
 
-    while True:
+    while (1):
         try:
-            frame = s.recv(16)  
+            frame = s.recv(64)  
         except OSError as e:
             print(f"Read error: {e}")
             return 1
 
         can_id, can_dlc, data = struct.unpack("<IB3x8s", frame)
         
-        print(f"0x{can_id:03X} [{can_dlc}] ", end="")
+        # print(f"0x{can_id:03X} [{can_dlc}] ", end="")
 
         # Decode the received frame using python-can
         msg = can.Message(
             arbitration_id=can_id,
             data=data,
             dlc=can_dlc,
-            is_extended_id=False  # Assuming standard CAN frames
+            is_extended_id=True  # Assuming standard CAN frames
         )
 
-
         # Call the message processing function
-        process_can_message(msg)
+        # process_can_message(msg)
 
-        if can_id == 150892286:
-            print("VehicleSpeed: {}".format(v_temp))
-            client.setValue("Vehicle.Speed", str(v_temp))
-            v_temp += 10
+        # print(f"Arbitration ID received: {msg.arbitration_id}")
 
-        print(f"Arbitration ID received: {msg.arbitration_id}")
+        msg_new = alter_message(msg.arbitration_id)
+        msg_pgn = (msg.arbitration_id >> 8) & 0x3FFFF #gets 18 bytes
+        # print(hex(msg_pgn))
 
-        dictionary = dbc.decode_message(msg.arbitration_id, msg.data)
-        for key, value in dictionary.items():
-            print(f"{key}: {value}")
+        # with open('pgn_names.txt') as myfile:
+        #     if str(hex(msg_pgn)) in myfile.read():
+        #         dictionary = dbc.decode_message(msg_new, msg.data)
+        #         for key, value in dictionary.items():
+        #             print(f"{key}: {value}")
+        #     else:
+        #         print("failed")
+        #         return
 
-        print("-------------------------------------------------------------------")
+        try:
+            if((msg_pgn == 65265) or (msg_pgn == 65248)):
+                dictionary = dbc.decode_message(msg_new, msg.data)
+                for key, value in dictionary.items():
+                    print(f"{key}: {value}")
+                print("-------------------------------------------------------------------")
+
+        except KeyError:
+            print("received error")
+            # continue
+
+        # Command handler
+        if msg_pgn == 0xFEF1:
+            client.setValue("Vehicle.Speed", str(v_temp))   # TODO: Change v_temp for the correct vehicle speed coming on the SPN
+            print("Received: Vehicle.Speed")
+        elif msg_pgn == 0xFEE0:
+            client.setValue("Vehicle.TravelledDistance", str(v_temp)) # TODO: Change v_temp for the correct vehicle speed coming on the SPN
+            print("Received: Vehicle.TravelledDistance")
+        elif msg_pgn == 0xFFFF: # TODO: Update PGN to correct value
+            client.setValue("Vehicle.Powertrain.FuelSystem.Level", str(v_temp)) # TODO: Change v_temp for the correct vehicle speed coming on the SPN
+            print("Received: Vehicle.Powertrain.FuelSystem.Level")
+        elif msg_pgn == 0xFFFE: # TODO: Update PGN to correct value
+            client.setValue("Vehicle.Powertrain.FuelSystem.Range", str(v_temp)) # TODO: Change v_temp for the correct vehicle speed coming on the SPN
+            print("Received: Vehicle.Powertrain.FuelSystem.Range")
+        elif msg_pgn == 0xFFFD: # TODO: Update PGN to correct value
+            client.setValue("Vehicle.Powertrain.CombustionEngine.Speed", str(v_temp)) # TODO: Change v_temp for the correct vehicle speed coming on the SPN
+            print("Received: Vehicle.Powertrain.CombustionEngine.Speed")
+        
+        v_temp += 10
+   
+        # print("-------------------------------------------------------------------")
 
     client.stop()
 
