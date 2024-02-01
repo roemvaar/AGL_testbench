@@ -1,0 +1,3 @@
+[submodule "AGL_testbench.wiki"]
+	path = docs
+	url = https://github.com/roemvaar/AGL_testbench.wiki.git
