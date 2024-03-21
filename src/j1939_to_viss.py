@@ -102,6 +102,10 @@ def main():
         elif msg_pgn == 0xFFFD: # TODO: Update PGN to correct value
             client.setValue("Vehicle.Powertrain.CombustionEngine.Speed", str(v_temp)) # TODO: Change v_temp for the correct vehicle speed coming on the SPN
             print("Received: Vehicle.Powertrain.CombustionEngine.Speed")
+        else:
+            print("received some frame")
+        
+        print("received a frame")
            
     client.stop()
 
