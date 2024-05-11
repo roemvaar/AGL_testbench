@@ -40,18 +40,18 @@ def main():
     except OSError as e:
         print(f"Bind error: {e}")
         return 1
-    
+
     print("-------------------------------------------------------------------")
 
     while (1):
         try:
-            frame = s.recv(64)  
+            frame = s.recv(64)
         except OSError as e:
             print(f"Read error: {e}")
             return 1
 
         can_id, can_dlc, data = struct.unpack("<IB3x8s", frame)
-        
+
         # print(f"0x{can_id:03X} [{can_dlc}] ", end="")
 
         # Decode the received frame using python-can
@@ -71,7 +71,7 @@ def main():
         msg_pgn = (msg.arbitration_id >> 8) & 0x3FFFF #gets 18 bytes
 
         try:
-            if((msg_pgn == 65265) or (msg_pgn == 65248)):
+            if((msg_pgn == 65265) or (msg_pgn == 65248) or (msg_pgn == 0xFEFC)):
                 dictionary = dbc.decode_message(msg_new, msg.data)
                 for key, value in dictionary.items():
                     print(f"{key}: {value}")
@@ -79,6 +79,11 @@ def main():
                         wheelBasedVehicleSpeed = value
                     elif key == "TotalVehicleDistance":
                         odometerDistance = value
+                    elif key == "FuelLevel1":
+                        fuel_level = value
+                        # # print(fuel_level, "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+                        # client.setValue("Vehicle.Powertrain.FuelSystem.Level", str(value)) # TODO: Change v_temp for the correct vehicle speed coming on the SPN
+                        # print("Received: Vehicle.Powertrain.FuelSystem.Level")
 
                 print("-------------------------------------------------------------------")
 
@@ -88,21 +93,21 @@ def main():
 
         # Command handler
         if msg_pgn == 0xFEF1:
-            client.setValue("Vehicle.Speed", str(wheelBasedVehicleSpeed))   # TODO: Change v_temp for the correct vehicle speed coming on the SPN
+            client.setValue("Vehicle.Speed", str(wheelBasedVehicleSpeed))
             print("Received: Vehicle.Speed")
         elif msg_pgn == 0xFEE0:
-            client.setValue("Vehicle.TravelledDistance", str(odometerDistance)) # TODO: Change v_temp for the correct vehicle speed coming on the SPN
+            client.setValue("Vehicle.TravelledDistance", str(odometerDistance))
             print("Received: Vehicle.TravelledDistance")
-        elif msg_pgn == 0xFFFF: # TODO: Update PGN to correct value
-            client.setValue("Vehicle.Powertrain.FuelSystem.Level", str(v_temp)) # TODO: Change v_temp for the correct vehicle speed coming on the SPN
+        elif msg_pgn == 0xFEFC:
+            client.setValue("Vehicle.Powertrain.FuelSystem.Level", str(fuel_level))
             print("Received: Vehicle.Powertrain.FuelSystem.Level")
         elif msg_pgn == 0xFFFE: # TODO: Update PGN to correct value
             client.setValue("Vehicle.Powertrain.FuelSystem.Range", str(v_temp)) # TODO: Change v_temp for the correct vehicle speed coming on the SPN
             print("Received: Vehicle.Powertrain.FuelSystem.Range")
         elif msg_pgn == 0xFFFD: # TODO: Update PGN to correct value
             client.setValue("Vehicle.Powertrain.CombustionEngine.Speed", str(v_temp)) # TODO: Change v_temp for the correct vehicle speed coming on the SPN
-            print("Received: Vehicle.Powertrain.CombustionEngine.Speed")
-           
+            print("Received: Vehicle.Powertrain.CombustionEngine.Speed")    #RPM
+
     client.stop()
 
 
