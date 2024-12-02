@@ -1,10 +1,12 @@
-# AGL_testbench
+# AGL Testbench
 
 Automotive Grade Linux Testbench developed by the Embedded
 Software Group of the University of Waterloo.
 
-Goal: Create a reusable demonstrator for experimenting and
-quantitatively evaluate research results.
+## Goal
+
+Create a reusable demonstrator for experimenting and
+quantitatively evaluate research results in cybersecurity applications for embedded systems.
 
 # Documentation
 
